@@ -4,12 +4,13 @@ from random import randint
 CELL = 100 # size of cell
 
 
-s=t.Screen()
+#s=t.Screen()
+s=t.getscreen()
 t.tracer(0)
 t.setup(width=CELL*5, height=CELL*5)
 #t.screensize(CELL*5,CELL*5)
 t.setworldcoordinates(-40, -40, CELL*3+40, CELL*3+40)
-
+t.title("Хрестики-Нолики")
 
 # размер в клетках для игрового поля
 dim = 3
@@ -232,5 +233,7 @@ def draw_field():
         t.forward(CELL*3) # горизонтальні лінії
         t.up()
 
-draw_field() # малюємо поле
-s.onclick(myhit)
+if __name__ == "__main__":
+    draw_field() # малюємо поле
+    s.onclick(myhit)
+    t.done()
