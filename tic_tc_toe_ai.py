@@ -1,11 +1,10 @@
 # tic tac toe
 import turtle as t
 from random import randint
-CELL = 100 # size of cell
+CELL = 100 # розмір клітини
+DELTA = 40 # розмір бордюра
 
-
-#s=t.Screen()
-s=t.getscreen()
+s=t.Screen()
 t.tracer(0)
 t.setup(width=CELL*5, height=CELL*5)
 #t.screensize(CELL*5,CELL*5)
@@ -140,8 +139,9 @@ def draw_text(text,x,y):
 def draw_button_restart():
     ''' малюємо кнопку СПОЧАТКУ '''
     w=CELL*3 # ширина кнопки
-    h=20 # висота кнопки
+    h=DELTA/2 # висота кнопки
     t.color("black", "green")
+    t.pensize(1)
     t.up()
     t.home()
     t.goto(0,-h)
@@ -186,7 +186,7 @@ def myhit(x,y):
     win=check_win(field)
     draw_XO() # малюємо поле
     if win == 1:
-        draw_text("Виграли X!",CELL*1.5,CELL*3+20) # посередині і зверху)
+        draw_text("Виграли X!",CELL*1.5,CELL*3+DELTA/2) # посередині і зверху)
         draw_button_restart()
         return
   
@@ -195,7 +195,7 @@ def myhit(x,y):
  
     available_steps = [i for i in range(dim*dim) if field[i] == 0]
     if len(available_steps) == 0:
-        draw_text("Ничія !",CELL*1.5,CELL*3+20) # посередині і зверху
+        draw_text("Ничія !",CELL*1.5,CELL*3+DELTA/2) # посередині і зверху
         print("GAME OVER!")
         draw_button_restart()
         return
@@ -207,7 +207,7 @@ def myhit(x,y):
     win=check_win(field)
     draw_XO() # малюємо поле
     if win == -1:
-        draw_text("Виграли O!",CELL*1.5,CELL*3+20) # посередині і зверху
+        draw_text("Виграли O!",CELL*1.5,CELL*3+DELTA/2) # посередині і зверху
         draw_button_restart()
         return
     # друкуємо поле в консолі
@@ -218,16 +218,39 @@ def draw_field():
 
     t.reset()
     t.home()
-    t.pensize(1)
     t.left(90)
     t.up()
-    for i in range(4):
+    t.pensize(1)
+    t.pencolor('light gray')
+    for i in range(-DELTA,CELL*3+DELTA,int(CELL/5)):
+        t.goto(i,-DELTA)
+        t.down()
+        t.forward(CELL*3+DELTA*2) # вертикальні лінії
+        t.up()
+
+    t.home()
+    t.up()
+    for i in range(-DELTA,CELL*3+DELTA,int(CELL/5)):
+        t.goto(-DELTA,i)
+        t.down()
+        t.forward(CELL*3+DELTA*2) # горизонтальні лінії
+        t.up()
+
+    
+    t.home()
+    t.left(90)
+    t.pensize(5)
+    t.pencolor('black')
+    for i in range(1,3):
+        print (i)
         t.goto(i*CELL,0)
         t.down()
         t.forward(CELL*3) # вертикальні лінії
         t.up()
+
     t.home()
-    for i in range(4):
+    t.up()
+    for i in range(1,3):
         t.goto(0,i*CELL)
         t.down()
         t.forward(CELL*3) # горизонтальні лінії
