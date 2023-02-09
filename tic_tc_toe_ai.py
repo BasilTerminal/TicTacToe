@@ -7,8 +7,7 @@ DELTA = 40 # розмір бордюра
 s=t.Screen()
 t.tracer(0)
 t.setup(width=CELL*5, height=CELL*5)
-#t.screensize(CELL*5,CELL*5)
-t.setworldcoordinates(-40, -40, CELL*3+40, CELL*3+40)
+t.setworldcoordinates(-DELTA, -DELTA, CELL*3+DELTA, CELL*3+DELTA)
 t.title("Хрестики-Нолики")
 
 # размер в клетках для игрового поля
@@ -18,10 +17,20 @@ field = [0,0,0,
          0,0,0,
          0,0,0]
 
+win_combination = (
+        (0,1,2), (3,4,5), (6,7,8),# горизонтальные линии
+        (0,3,6), (1,4,7), (2,5,8),# вертикальные линии
+        (0,4,8), (6,4,2)# диагональные линии
+        )
+
+
+
 win = 0 # флажок хто виграв: 1:Х, -1:О, 0-нема
 
 def drawcross(x,y):
     t.home()
+    t.pensize(10)
+    t.pencolor('black')
     t.goto(x*CELL+CELL/2,y*CELL+CELL/2) # centr of cell
 
     t.goto(x*CELL+CELL/2-CELL/4,y*CELL+CELL/2-CELL/4)
@@ -38,6 +47,8 @@ def drawcross(x,y):
 
 def drawzero(x,y):
     t.home()
+    t.pensize(10)
+    t.pencolor('blue')
     t.goto(x*CELL+CELL/2,y*CELL+CELL/4)
 
     t.pendown()
@@ -49,12 +60,7 @@ def check_win(field):
         Повертає 1 якщо виграли Х
         Повертає -1 якщо виграли О
         Повертає 0 якщо нема '''
-        
-    win_combination = (
-        (0,1,2), (3,4,5), (6,7,8),# горизонтальные линии
-        (0,3,6), (1,4,7), (2,5,8),# вертикальные линии
-        (0,4,8), (2,4,6)# диагональные линии
-    )
+
     for pos in win_combination:
         s = field[pos[0]] + field[pos[1]] + field[pos[2]]
         if s == 3:
@@ -159,6 +165,63 @@ def draw_button_restart():
     draw_text("Спочатку",CELL*1.5,-h*2) # посередині і знизу
 
 
+def draw_cross_line():
+    ''' перекреслюємо відповідним кольором три вигршні клітини '''
+    for pos in win_combination:
+        s = field[pos[0]] + field[pos[1]] + field[pos[2]]
+        if s == 3:
+            #print("Виграли X!")
+            color_cross_line='black'
+            break
+        elif s == -3:
+            #print("Виграли 0!")
+            color_cross_line='blue'
+            break
+
+    # малюємо лінію від першої клітини pos[0] до останньої pos[2]
+
+    # перетворюємо індекс в двовимірні координати
+    i1 = pos[0]%3 # номер стовпчика
+    j1 = int(pos[0]/3) # номер рядка
+    
+    i2 = pos[2]%3 # номер стовпчика
+    j2 = int(pos[2]/3) # номер рядка
+    
+
+    # якщо лінія вертикальна
+    if  i1 == i2:
+        x1 = x2 = i1*CELL +CELL/2
+        y1 = 0
+        y2 = CELL*3
+            
+    # якщо лінія горизонтальна
+    elif j1 == j2:
+        y1 = y2 = j1*CELL +CELL/2
+        x1 = 0
+        x2 = CELL*3
+
+    else: # якщо лінія діагональна
+        # визначаємо яка діагональ
+        if i1 == j1: # діагональ як слеш
+            x1 = y1 = 0
+            x2 = y2 = CELL * 3
+        else:   # діагональ як бекслеш
+            x1 = y2 = 0
+            y1 = x2 = CELL * 3
+        
+
+    t.home()
+    t.pensize(10)
+    t.pencolor('red')#color_cross_line)
+    t.goto(x1,y1)
+    t.pendown()
+    t.goto(x2,y2)
+    t.penup()
+
+    return
+    
+    
+
 def myhit(x,y):
     ''' Обробка клика '''
     global win, field
@@ -187,6 +250,7 @@ def myhit(x,y):
     draw_XO() # малюємо поле
     if win == 1:
         draw_text("Виграли X!",CELL*1.5,CELL*3+DELTA/2) # посередині і зверху)
+        draw_cross_line()
         draw_button_restart()
         return
   
@@ -208,6 +272,7 @@ def myhit(x,y):
     draw_XO() # малюємо поле
     if win == -1:
         draw_text("Виграли O!",CELL*1.5,CELL*3+DELTA/2) # посередині і зверху
+        draw_cross_line()
         draw_button_restart()
         return
     # друкуємо поле в консолі
